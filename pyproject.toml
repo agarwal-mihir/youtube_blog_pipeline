@@ -1,0 +1,26 @@
+[project]
+name = "youtube-blog-pipeline"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = [
+    "requests==2.32.3",
+    "youtube-transcript-api==0.6.0",
+    "streamlit==1.38.0",
+    "google-genai==0.3.0",
+    "python-dotenv==1.0.1",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest==8.3.3",
+]
+
+[build-system]
+requires = ["setuptools>=65"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = [
+    "youtube_blog_pipeline",
+    "youtube_blog_pipeline.*",
+]
