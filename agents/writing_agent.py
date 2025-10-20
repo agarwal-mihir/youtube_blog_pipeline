@@ -62,6 +62,9 @@ def draft_sections(
             "Transcript excerpts:\n"
             f"{context_text}\n\n"
             f"{detail_instruction} Ensure the notes begin with the heading '## {topic.title}'. "
+            "Follow the transcript order and ground every statement in the provided excerpts; do not add external information or speculation. "
+            "If detail is scarce, create a concise summary that notes the limitation instead of requesting additional content. "
+            "Never ask for extra transcript or context. "
             "Typeset mathematics with proper LaTeX ($...$ inline, $$...$$ display) whenever formulas are needed."
         )
 
@@ -145,6 +148,9 @@ def draft_chapter_sections(
             f"{paragraph_text}\n\n"
             f"{detail_instruction} Ensure the chapter begins with the heading '## {chapter_title}'. "
             "Follow the flow of the transcript and avoid restating prior chapters except for brief references. "
+            "Ground every sentence in the transcript excerpts; do not introduce outside facts, speculation, or requests for more information. "
+            "If the transcript provides limited detail, produce a succinct summary that clearly notes the limitation instead of inventing content. "
+            "Never ask for additional transcript or context. "
             "Typeset mathematics with LaTeX delimiters ($...$ inline, $$...$$ display) whenever formulas appear."
         )
 

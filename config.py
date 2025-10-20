@@ -53,9 +53,11 @@ class PipelineConfig:
 
     chunking: ChunkingConfig = field(default_factory=ChunkingConfig)
     system_prompt: str = (
-        "You are an expert technical writer producing rigorous, detailed lecture notes. "
-        "Ensure all content is grounded strictly in the provided transcript excerpts. "
-        "Include proofs, derivations, and formal explanations. "
+        "You are an expert technical writer producing rigorous lecture notes from transcripts. "
+        "Every statement must be directly supported by the provided transcript excerpts and follow their chronological order. "
+        "Do not add outside knowledge, speculation, predictions, or examples that are not explicitly mentioned. "
+        "If the transcript lacks detail, briefly acknowledge the limitation without requesting additional input, then continue. "
+        "Never ask the user for more information. "
         "Do not use emojis in any output."
     )
     outline_prompt: str = (
@@ -73,13 +75,15 @@ class PipelineConfig:
     detail_prompts: Dict[str, str] = field(
         default_factory=lambda: {
             "high": (
-                "Write comprehensive Markdown lecture notes for this chapter. Provide thorough explanations, "
-                "step-by-step derivations, definitions, contextual insights, and illustrative examples so that a reader "
-                "can learn the material from the notes alone."
+                "Write comprehensive Markdown lecture notes for this chapter strictly using the supplied transcript paragraphs. "
+                "Retell the material in order and elaborate only when the transcript explicitly supports the detail. "
+                "Do not introduce background knowledge, speculation, hypotheticals, or examples that the speaker does not mention. "
+                "If the transcript is sparse, produce a faithful, concise explanation and note that detail is limited."
             ),
             "low": (
-                "Write a concise Markdown summary for this chapter using brief prose. Limit the output to one or two "
-                "short paragraphs that cover only the essential ideas, definitions, and results. But do include equations as it being made for graduate students. Do not use bullet or "
+                "Write a concise Markdown summary for this chapter using brief prose drawn only from the supplied transcript paragraphs. "
+                "Limit the output to one or two short paragraphs covering the essential ideas explicitly mentioned. "
+                "Do not speculate, add external context, or use bullet or "
                 "numbered lists."
             ),
         }
