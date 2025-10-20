@@ -81,14 +81,24 @@ def chunk_transcript(
 
         if current_tokens + segment_tokens > limit and buffer:
             end_ts = last_end if last_end is not None else segment.start
-            chunks.append(
-                Chunk(
-                    text=" ".join(buffer),
-                    start=start_ts or 0.0,
-                    end=end_ts,
-                    segment_indices=list(indices),
-                )
+            chunk_text = " ".join(buffer)
+            chunk = Chunk(
+                text=chunk_text,
+                start=start_ts or 0.0,
+                end=end_ts,
+                segment_indices=list(indices),
             )
+            chunks.append(chunk)
+            if LOGGER.isEnabledFor(logging.DEBUG):
+                LOGGER.debug(
+                    "Chunk %d: %d chars (~%d tokens) covering %d segments (%.1fs–%.1fs)",
+                    len(chunks),
+                    len(chunk_text),
+                    _estimate_tokens(chunk_text),
+                    len(indices),
+                    chunk.start,
+                    chunk.end,
+                )
 
             prev_indices = chunks[-1].segment_indices
             step_back_tokens = 0
@@ -113,14 +123,24 @@ def chunk_transcript(
         last_end = segment.start + segment.duration
 
     if buffer:
-        chunks.append(
-            Chunk(
-                text=" ".join(buffer),
-                start=start_ts or 0.0,
-                end=last_end or (start_ts or 0.0),
-                segment_indices=list(indices),
-            )
+        chunk_text = " ".join(buffer)
+        chunk = Chunk(
+            text=chunk_text,
+            start=start_ts or 0.0,
+            end=last_end or (start_ts or 0.0),
+            segment_indices=list(indices),
         )
+        chunks.append(chunk)
+        if LOGGER.isEnabledFor(logging.DEBUG):
+            LOGGER.debug(
+                "Chunk %d: %d chars (~%d tokens) covering %d segments (%.1fs–%.1fs)",
+                len(chunks),
+                len(chunk_text),
+                _estimate_tokens(chunk_text),
+                len(indices),
+                chunk.start,
+                chunk.end,
+            )
 
     LOGGER.info("Chunked transcript into %d chunks", len(chunks))
     return chunks

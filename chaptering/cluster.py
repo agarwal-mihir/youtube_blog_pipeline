@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List
 import numpy as np
+import logging
 
 from youtube_blog_pipeline.agents.lmstudio_client import LMStudioClient, Message
 from youtube_blog_pipeline.agents.lmstudio_embeddings import LMStudioEmbeddingsClient
@@ -15,6 +16,9 @@ class Chapter:
     start: float
     end: float
     paragraph_indices: List[int]
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def _cos(a: List[float], b: List[float]) -> float:
@@ -39,6 +43,7 @@ def cluster_paragraphs(
     chapters: List[Chapter] = []
     if not paragraphs:
         return chapters
+    similarities: List[float] = []
     cur = Chapter(
         title="",
         start=paragraphs[0].start,
@@ -47,6 +52,7 @@ def cluster_paragraphs(
     )
     for idx in range(1, len(paragraphs)):
         sim = _cos(vectors[idx - 1], vectors[idx])
+        similarities.append(sim)
         if sim >= sim_threshold:
             cur.end = max(cur.end, paragraphs[idx].end)
             cur.paragraph_indices.append(idx)
@@ -59,6 +65,20 @@ def cluster_paragraphs(
                 paragraph_indices=[idx],
             )
     chapters.append(cur)
+    if LOGGER.isEnabledFor(logging.DEBUG) and similarities:
+        below = sum(1 for value in similarities if value < sim_threshold)
+        LOGGER.debug(
+            "Chapter clustering threshold %.2f → %d chapters from %d paragraphs; "
+            "similarity stats min=%.3f max=%.3f mean=%.3f (below threshold: %d of %d)",
+            sim_threshold,
+            len(chapters),
+            len(paragraphs),
+            min(similarities),
+            max(similarities),
+            float(sum(similarities) / len(similarities)),
+            below,
+            len(similarities),
+        )
     return chapters
 
 

@@ -32,7 +32,7 @@ The pipeline defaults are defined in `config.py`. Key options:
 | --- | --- | --- |
 | `lmstudio` | Local OpenAI-compatible settings | Base URL, model key (`qwen/qwen3-4b-2507`), context length, request headers |
 | `chunking` | Transcript segmentation | `max_tokens`, `overlap_tokens`, merge gap tolerance |
-| `chaptering` | Coverage-first chapter discovery | Embedding model, similarity threshold, window/stride seconds |
+| `chaptering` | Chapter discovery | Embedding model, similarity threshold, paragraph formatting limits |
 | `detail_prompts` | Draft verbosity | High/low detail instructions and token limits |
 | `google` | Google AI Studio | Model (`models/gemma-3-27b-it`), API key env vars |
 

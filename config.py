@@ -95,12 +95,12 @@ class PipelineConfig:
     # Chaptering configuration for paragraph alignment and clustering
     @dataclass
     class ChapteringConfig:
-        sim_threshold: float = 0.58
+        sim_threshold: float = 0.5
         # Embedding model served via LM Studio embeddings endpoint
         embedding_model: str = "Qwen/Qwen3-Embedding-0.6B-GGUF/Qwen3-Embedding-0.6B-Q8_0.gguf"
         # Desired context length for the embedding model
         embedding_context_length: int = 0
-        paragraph_max_chars: int = 3500
+        paragraph_max_chars: int = 36000
         paragraph_sample_words: int = 50
 
     chaptering: ChapteringConfig = field(default_factory=ChapteringConfig)
