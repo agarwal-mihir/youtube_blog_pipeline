@@ -98,7 +98,7 @@ class PipelineConfig:
         window_len_seconds: int = 180
         stride_seconds: int = 30
         superchunk_size: int = 5
-        sim_threshold: float = 0.72
+        sim_threshold: float = 0.58
         gap_threshold_seconds: int = 10
         # Embedding model served via LM Studio embeddings endpoint
         embedding_model: str = "Qwen/Qwen3-Embedding-0.6B-GGUF/Qwen3-Embedding-0.6B-Q8_0.gguf"
