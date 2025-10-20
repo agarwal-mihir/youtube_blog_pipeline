@@ -29,7 +29,7 @@ class LMStudioConfig:
 class ChunkingConfig:
     """Configuration for transcript chunking."""
 
-    max_tokens: int = 1800
+    max_tokens: int = 9000
     overlap_tokens: int = 200
     merge_gap_seconds: float = 1.5
 
@@ -44,12 +44,12 @@ class PipelineConfig:
         model: str = "models/gemma-3-27b-it"
         temperature: float = 0.2
         top_p: float = 0.95
-        max_tokens: int = 4096
+        max_tokens: int = 0
         stop_sequences: Optional[tuple[str, ...]] = None
         api_key_env_vars: tuple[str, ...] = ("GOOGLE_API_KEY", "GEMINI_API_KEY")
         supports_system_instruction: bool = False
         rate_limit_retries: int = 3
-        rate_limit_backoff_seconds: float = 60.0
+        rate_limit_backoff_seconds: float = 2.0
 
     chunking: ChunkingConfig = field(default_factory=ChunkingConfig)
     system_prompt: str = (
@@ -63,12 +63,6 @@ class PipelineConfig:
     outline_prompt: str = (
         "Given the transcript context, produce a structured outline of topics with concise "
         "summaries. Provide for each topic: a descriptive title and a 1-2 sentence summary."
-    )
-    reviewer_prompt: str = (
-        "Review the provided section draft alongside transcript excerpts. Add missing details, "
-        "clarify proofs, ensure accuracy, and maintain continuity. Output the improved markdown "
-        "section starting from the existing heading. Ensure the result is valid Markdown and typeset "
-        "any mathematics with correct LaTeX delimiters ($...$ for inline, $$...$$ for display)."
     )
     history_max_entries: int = 4
     history_summary_chars: int = 220
@@ -98,24 +92,18 @@ class PipelineConfig:
     # When True, scrub timestamps from transcripts and previews
     redact_timestamps: bool = True
     
-    # Coverage-guaranteed chaptering settings
+    # Chaptering configuration for paragraph alignment and clustering
     @dataclass
     class ChapteringConfig:
-        window_len_seconds: int = 180
-        stride_seconds: int = 30
-        superchunk_size: int = 5
         sim_threshold: float = 0.58
-        gap_threshold_seconds: int = 10
         # Embedding model served via LM Studio embeddings endpoint
         embedding_model: str = "Qwen/Qwen3-Embedding-0.6B-GGUF/Qwen3-Embedding-0.6B-Q8_0.gguf"
         # Desired context length for the embedding model
-        embedding_context_length: int = 8192
-        map_max_chars: int = 40000
+        embedding_context_length: int = 0
         paragraph_max_chars: int = 3500
         paragraph_sample_words: int = 50
 
     chaptering: ChapteringConfig = field(default_factory=ChapteringConfig)
-    use_coverage_outline: bool = True
     google: GoogleAIConfig = field(default_factory=GoogleAIConfig)
 
 

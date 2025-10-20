@@ -1,7 +1,7 @@
 <details>
 <summary><strong>YouTube Transcript → Blog Pipeline</strong></summary>
 
-Transform YouTube transcripts into polished, chaptered lecture notes using LM Studio (local) or Google AI Studio (Gemini) models. The pipeline normalizes transcripts, chunks them for LLM prompting, drafts sections, reviews them, and assembles publication-ready Markdown.
+Transform YouTube transcripts into polished, chaptered lecture notes using LM Studio (local) or Google AI Studio (Gemini) models. The pipeline normalizes transcripts, chunks them for LLM prompting, drafts sections, and assembles publication-ready Markdown.
 
 </details>
 
@@ -9,7 +9,7 @@ Transform YouTube transcripts into polished, chaptered lecture notes using LM St
 
 - **Dual model support**: generate content with local LM Studio models or Google AI Studio.
 - **Automatic chaptering**: paragraph alignment, semantic clustering, and title generation with configurable thresholds.
-- **Structured drafting loop**: outline creation, section drafting, reviewer refinement, and emoji/timestamp cleanup.
+- **Structured drafting loop**: outline creation, section drafting, and emoji/timestamp cleanup.
 - **Multiple surfaces**: Streamlit UI (`app.py`) and CLI (`main.py`).
 - **Deterministic tests**: extensive pytest coverage for services, processing, and agent utilities.
 
@@ -99,7 +99,7 @@ Features:
 services/transcript_service.py   → fetch + normalize YouTube transcripts
 processing/text_processing.py    → segment normalization & chunk creation
 chaptering/*                     → paragraph formatting, embeddings, clustering, titling
-agents/*                         → outline, drafting, review, and LM integrations
+agents/*                         → outline, drafting, and LM integrations
 assembly/blog_assembler.py       → generate final markdown with front matter
 postprocessing/*                 → strip emojis and timestamps
 app.py / main.py                 → Streamlit UI and CLI entrypoints
