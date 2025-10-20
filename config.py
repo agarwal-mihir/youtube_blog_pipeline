@@ -48,6 +48,8 @@ class PipelineConfig:
         stop_sequences: Optional[tuple[str, ...]] = None
         api_key_env_vars: tuple[str, ...] = ("GOOGLE_API_KEY", "GEMINI_API_KEY")
         supports_system_instruction: bool = False
+        rate_limit_retries: int = 3
+        rate_limit_backoff_seconds: float = 60.0
 
     chunking: ChunkingConfig = field(default_factory=ChunkingConfig)
     system_prompt: str = (

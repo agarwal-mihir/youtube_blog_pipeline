@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import logging
 import os
+import re
+import time
 from dataclasses import dataclass
 from typing import Iterable, List, Optional
 
@@ -66,6 +68,33 @@ class GoogleAIClient:
             ) from exc
         self._client = genai.Client(api_key=self._api_key)
         self._types = types
+
+    @staticmethod
+    def _is_rate_limited(exc: Exception) -> bool:
+        message = str(exc)
+        lowered = message.lower()
+        return (
+            "resource_exhausted" in lowered
+            or "quota" in lowered
+            or "rate limit" in lowered
+            or "too many requests" in lowered
+        )
+
+    @staticmethod
+    def _extract_retry_delay(message: str) -> Optional[float]:
+        patterns = [
+            r"retryDelay[^0-9]*([0-9]+(?:\.[0-9]+)?)s",
+            r"retry in ([0-9]+(?:\.[0-9]+)?)s",
+            r"retry in ([0-9]+(?:\.[0-9]+)?) seconds",
+        ]
+        for pattern in patterns:
+            match = re.search(pattern, message, flags=re.IGNORECASE)
+            if match:
+                try:
+                    return float(match.group(1))
+                except (ValueError, TypeError):
+                    continue
+        return None
 
     def chat_completion(
         self,
@@ -139,18 +168,41 @@ class GoogleAIClient:
             config_kwargs["stop_sequences"] = stop_sequences
         if system_instruction is not None and self._config.supports_system_instruction:
             config_kwargs["system_instruction"] = system_instruction
-
         config = types.GenerateContentConfig(**config_kwargs)
 
-        try:
-            response = self._client.models.generate_content(  # type: ignore[union-attr]
-                model=self._model,
-                contents=contents,
-                config=config,
-            )
-        except Exception as exc:  # noqa: BLE001
-            LOGGER.error("Google AI Studio request failed: %s", exc)
-            raise GoogleAIError(f"Google AI Studio request failed: {exc}") from exc
+        attempts = 0
+        max_attempts = max(0, self._config.rate_limit_retries)
+        last_exc: Optional[Exception] = None
+
+        while True:
+            try:
+                response = self._client.models.generate_content(  # type: ignore[union-attr]
+                    model=self._model,
+                    contents=contents,
+                    config=config,
+                )
+                break
+            except Exception as exc:  # noqa: BLE001
+                attempts += 1
+                last_exc = exc
+                message = str(exc)
+                if attempts > max_attempts or not self._is_rate_limited(exc):
+                    LOGGER.error("Google AI Studio request failed: %s", message)
+                    raise GoogleAIError(f"Google AI Studio request failed: {message}") from exc
+
+                delay = self._extract_retry_delay(message)
+                if delay is None or delay <= 0:
+                    delay = self._config.rate_limit_backoff_seconds * attempts
+                LOGGER.warning(
+                    "Google AI Studio rate limit encountered (attempt %d/%d). Retrying in %.1fs.",
+                    attempts,
+                    max_attempts,
+                    delay,
+                )
+                time.sleep(delay)
+
+        if last_exc is not None and attempts > 0:
+            LOGGER.info("Google AI Studio request succeeded after %d retry(ies).", attempts)
 
         text = getattr(response, "text", None)
         if text:
