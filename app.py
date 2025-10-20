@@ -2,13 +2,22 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+# Ensure the package can be resolved even when Streamlit launches from a different working directory.
+_APP_DIR = Path(__file__).resolve().parent
+for candidate in {_APP_DIR, _APP_DIR.parent}:
+    candidate_str = str(candidate)
+    if candidate_str not in sys.path:
+        sys.path.insert(0, candidate_str)
+
 import streamlit as st
 
 from youtube_blog_pipeline.agents.google_client import GoogleAIError
 from youtube_blog_pipeline.agents.lmstudio_manager import ensure_lmstudio_ready
 from youtube_blog_pipeline.main import run_pipeline
 from youtube_blog_pipeline.services.transcript_service import extract_video_id
-from pathlib import Path
 
 try:
     from dotenv import load_dotenv

@@ -71,7 +71,7 @@ python -m youtube_blog_pipeline.main \
 Arguments:
 
 - `--provider`: `lmstudio` (default) or `google`.
-- `--detail-level`: `high` (comprehensive) or `low` (concise bullet-style notes).
+- `--detail-level`: `high` (comprehensive) or `low` (concise paragraph summaries).
 - `--chunk-size`, `--overlap`: override transcript chunking.
 - `--log-level`: standard Python logging level.
 

@@ -76,8 +76,9 @@ class PipelineConfig:
                 "can learn the material from the notes alone."
             ),
             "low": (
-                "Write a concise Markdown summary for this chapter. Limit the output to a short introduction followed "
-                "by at most 5 bullet points or brief paragraphs covering only the key ideas, definitions, and results."
+                "Write a concise Markdown summary for this chapter using brief prose. Limit the output to one or two "
+                "short paragraphs that cover only the essential ideas, definitions, and results. But do include equations as it being made for graduate students. Do not use bullet or "
+                "numbered lists."
             ),
         }
     )
